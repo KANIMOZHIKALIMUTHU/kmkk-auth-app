@@ -13,7 +13,7 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("https://kmkk-auth-app.onrender.com/auth/login",
+      await axios.post("http://localhost:5000/auth/login",
         { email, password },
         { withCredentials: true }
       );
