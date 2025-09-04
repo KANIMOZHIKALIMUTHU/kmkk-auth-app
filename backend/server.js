@@ -1,28 +1,39 @@
 import express from "express";
 import session from "express-session";
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import authRoutes from "./routes/auth.js";
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
+// Middleware
 app.use(express.json());
-app.use(cors({
-  origin: "http://localhost:3000",
-  credentials: true
-}));
-
+app.use(cookieParser());
 app.use(
   session({
-    secret: "supersecret",
+    secret: "mysecretkey",
     resave: false,
-    saveUninitialized: false,
-    cookie: { secure: false }
+    saveUninitialized: true,
+    cookie: { secure: false }, // secure: true only in https
   })
 );
 
-app.use("/auth", authRoutes);
+// ✅ Allow frontend (Vercel) to connect
+app.use(
+  cors({
+    origin: "https://kmkk-auth-app.vercel.app", // Replace with Vercel frontend URL
+    credentials: true,
+  })
+);
 
-app.listen(PORT, () => {
-  console.log(`✅ Server running at http://localhost:${PORT}`);
+// Routes
+app.use("/api/auth", authRoutes);
+
+// Root check
+app.get("/", (req, res) => {
+  res.send("Auth API running 🚀");
 });
+
+// Start server
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

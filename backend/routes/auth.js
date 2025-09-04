@@ -7,16 +7,18 @@ const router = express.Router();
 // Register
 router.post("/register", (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password)
+  if (!email || !password) {
     return res.status(400).json({ message: "Email and password required" });
+  }
 
   const hashedPassword = bcrypt.hashSync(password, 10);
   const query = "INSERT INTO users (email, password) VALUES (?, ?)";
 
   db.run(query, [email, hashedPassword], function (err) {
     if (err) {
-      if (err.message.includes("UNIQUE"))
+      if (err.message.includes("UNIQUE")) {
         return res.status(400).json({ message: "Email already exists" });
+      }
       return res.status(500).json({ message: "Error registering user" });
     }
     res.json({ message: "User registered successfully" });
@@ -39,9 +41,11 @@ router.post("/login", (req, res) => {
   });
 });
 
-// Session check
+// Check session
 router.get("/me", (req, res) => {
-  if (req.session.user) return res.json(req.session.user);
+  if (req.session.user) {
+    return res.json(req.session.user);
+  }
   res.status(401).json({ message: "Not logged in" });
 });
 
