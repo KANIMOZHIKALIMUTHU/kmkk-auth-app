@@ -5,35 +5,33 @@ import cors from "cors";
 import authRoutes from "./routes/auth.js";
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
-// Middleware
+// Your deployed frontend URL
+const FRONTEND_URL = "https://kmkk-auth-app.vercel.app";
+
+app.use(cors({
+  origin: FRONTEND_URL,
+  credentials: true, // allow cookies
+}));
+
 app.use(express.json());
 app.use(cookieParser());
+
 app.use(
   session({
-    secret: "mysecretkey",
+    secret: "secret-key",
     resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false }, // secure: true only in https
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: true,       // important for HTTPS
+      sameSite: "none",   // allow cross-site cookies
+    },
   })
 );
 
-// ✅ Allow frontend (Vercel) to connect
-app.use(
-  cors({
-    origin: "https://kmkk-auth-app.vercel.app", // Replace with Vercel frontend URL
-    credentials: true,
-  })
-);
+app.use("/api", authRoutes);
 
-// Routes
-app.use("/api/auth", authRoutes);
-
-// Root check
-app.get("/", (req, res) => {
-  res.send("Auth API running 🚀");
+app.listen(10000, () => {
+  console.log("Auth API running on port 10000");
 });
-
-// Start server
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
