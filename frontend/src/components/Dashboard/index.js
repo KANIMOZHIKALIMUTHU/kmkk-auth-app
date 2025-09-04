@@ -8,7 +8,7 @@ function Dashboard({ user }) {
 
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:5000/auth/logout", {}, { withCredentials: true });
+      await axios.post("https://kmkk-auth-app.onrender.com/auth/logout", {}, { withCredentials: true });
       navigate("/login");
     } catch (err) {
       alert("Logout failed, try again");

@@ -13,7 +13,7 @@ export default function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/auth/register",
+      await axios.post("https://kmkk-auth-app.onrender.com/auth/register",
         { email, password },
         { withCredentials: true }
       );
