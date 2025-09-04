@@ -1,3 +1,4 @@
+// backend/server.js
 import express from "express";
 import session from "express-session";
 import cookieParser from "cookie-parser";
@@ -9,6 +10,7 @@ const app = express();
 // Your deployed frontend URL
 const FRONTEND_URL = "https://kmkk-auth-app.vercel.app";
 
+// Middlewares
 app.use(cors({
   origin: FRONTEND_URL,
   credentials: true, // allow cookies
@@ -19,19 +21,22 @@ app.use(cookieParser());
 
 app.use(
   session({
-    secret: "secret-key",
+    secret: "secret-key", // store in env in real apps
     resave: false,
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: true,       // important for HTTPS
-      sameSite: "none",   // allow cross-site cookies
+      secure: process.env.NODE_ENV === "production", // HTTPS in prod only
+      sameSite: "none", // allow cross-site cookies (frontend <-> backend)
     },
   })
 );
 
+// Routes
 app.use("/api", authRoutes);
 
-app.listen(10000, () => {
-  console.log("Auth API running on port 10000");
+// Dynamic port for Render
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Auth API running on port ${PORT}`);
 });
